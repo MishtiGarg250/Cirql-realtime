@@ -312,6 +312,35 @@ NODE_ENV=production
 
 # Production Frontend
 NEXT_PUBLIC_BACKEND_URL=https://your-backend-domain.com
+NEXT_PUBLIC_WEBRTC_URL=https://your-webrtc-domain.com
+```
 
+### **Deployment Steps**
+1. **Backend**: Deploy to Vercel, Railway, or any Node.js hosting
+2. **Frontend**: Deploy to Vercel, Netlify, or any static hosting
+3. **Database**: Use MongoDB Atlas for database
+4. **Redis**: Use Redis Cloud or similar service
+5. **WebRTC**: Deploy signaling server to support WebRTC connections
 
-*Connect, collaborate, and create amazing experiences together!* 
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 🆘 Support
+
+For support and questions:
+- Create an issue in the repository
+- Check the documentation
+- Review the code comments
+
+---
+
+**Built with ❤️ for the Mishti.chat community** 
