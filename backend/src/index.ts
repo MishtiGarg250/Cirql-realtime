@@ -61,7 +61,7 @@ const roomSchema = new mongoose.Schema({
   title: { type: String, required: true },
   description: { type: String },
   category: { type: String },
-  type: { type: String, enum: ['Watch Together'], required: true },
+  type: { type: String},
   isPrivate: { type: Boolean, default: false },
   code: { type: String, unique: true, sparse: true }, // Unique code for private rooms
   createdBy: { type: String, required: true },
@@ -327,7 +327,33 @@ app.get('/api/messages/:username1/:username2', authenticateToken, async (req, re
 
 app.get('/api/rooms', async (req, res) => {
   try {
-    const rooms = await Room.find({ isPrivate: false }).sort({ createdAt: -1 });
+    // Get the user from the Authorization header if present
+    const authHeader = req.headers['authorization'];
+    let username = null;
+    
+    if (authHeader) {
+      const token = authHeader.split(' ')[1]; // Bearer TOKEN
+      const payload = verifyToken(token);
+      if (payload) {
+        username = payload.username;
+      }
+    }
+    
+    // Build query: public rooms OR private rooms where user is creator/participant
+    let query: any = { isPrivate: false }; // Default to public rooms only
+    
+    if (username) {
+      // If user is authenticated, include their private rooms
+      query = {
+        $or: [
+          { isPrivate: false }, // Public rooms
+          { isPrivate: true, createdBy: username }, // Private rooms created by user
+          { isPrivate: true, participants: username } // Private rooms where user is participant
+        ]
+      };
+    }
+    
+    const rooms = await Room.find(query).sort({ createdAt: -1 });
     
     // Add isActive status based on participants
     const roomsWithActivity = rooms.map(room => {
@@ -601,10 +627,7 @@ io.on('connection', (socket) => {
         return socket.emit('joinRoomError', { message: 'Room not found. Please check the room ID and try again.' });
       }
       
-      // Check if room is private and user is not already a participant
-      if (room.isPrivate && !room.participants.includes(username)) {
-        return socket.emit('joinRoomError', { message: 'This is a private room. You need an invitation code to join.' });
-      }
+      
       
       if (!room.participants.includes(username)) {
         room.participants.push(username);

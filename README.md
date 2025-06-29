@@ -1,96 +1,108 @@
-# 🎮 Mishti.chat - Social Video Platform
+# CIRQL - Real-Time Social Video Platform
 
-A comprehensive real-time video chat and social platform with two distinct room types: Google Meet-style video meetings and collaborative YouTube watch parties.
+A modern, feature-rich real-time social platform built with Next.js 15, TypeScript, and Socket.IO. Experience collaborative watchings, direct messaging, and social networking all in one place.
+
 
 ## ✨ Features
 
-### 🏠 **Dashboard**
-- **Friend Management**: Send/accept friend requests, view friend list with online status
-- **Direct Messaging**: Real-time chat with friends, message history persistence
-- **Room Creation**: Create two types of rooms with custom settings
-- **Room Discovery**: Browse and join available public rooms
-- **Real-time Notifications**: Friend requests, messages, and room activity
-
-### 🎥 **Video Meeting Rooms** (Google Meet Style)
-- **Peer-to-Peer Video Calls**: WebRTC-based video/audio streaming
-- **Screen Sharing**: Share your screen with participants
-- **Participant List**: See who's in the room with real-time updates
-- **Room Chat**: Real-time messaging during meetings
-- **Host Controls**: Room creator has special privileges
-
-### 📺 **Watch Party Rooms** (YouTube Sync)
-- **Collaborative Video Watching**: Add YouTube videos to shared queue
-- **Video Voting**: Upvote/downvote videos to prioritize the queue
-- **Synchronized Playback**: All participants watch the same video
-- **Queue Management**: Navigate through video playlist
-- **Real-time Chat**: Discuss videos while watching
+### 🏠 **Dashboard & Navigation**
+- **Modern UI**: Beautiful cosmic-themed design with gradient animations
+- **Responsive Layout**: Works seamlessly on desktop and mobile devices
+- **Real-time Status**: Live friend online/offline indicators
+- **Quick Actions**: One-click access to create rooms, find friends, and start chats
+- **Collapsible Sidebar**: Space-efficient navigation with smooth animations
 
 ### 👥 **Social Features**
-- **Friend System**: Add friends by username, manage friend requests
-- **Direct Messaging**: Private conversations with message history
-- **Online Status**: See when friends are online/offline
-- **User Profiles**: Simple username-based profiles
+- **Friend System**: Send and accept friend requests with real-time notifications
+- **Direct Messaging**: Private conversations with message history and emoji support
+- **User Profiles**: Customizable profiles with avatar uploads
+- **Online Status**: Real-time friend status updates
+- **Friend Discovery**: Search and find new friends by username
+
+### 📺 **Watch Party Rooms**
+- **YouTube Integration**: Add YouTube videos to collaborative queue
+- **Video Voting**: Upvote/downvote system to prioritize content
+- **Synchronized Playback**: All participants watch the same video simultaneously
+- **Queue Management**: Navigate through video playlist with controls
+- **Real-time Chat**: Discuss videos while watching together
+
+### 🔔 **Real-time Notifications**
+- **Friend Requests**: Instant notifications for incoming requests
+- **Message Alerts**: Real-time message notifications
+- **Room Activity**: Updates on room joins, leaves, and activity
+- **Status Changes**: Live friend online/offline status updates
 
 ## 🏗️ Architecture
 
-### **Frontend** (Next.js 15 + TypeScript)
+### **Frontend Stack**
 - **Framework**: Next.js 15 with App Router
-- **Styling**: Tailwind CSS for modern, responsive design
+- **Language**: TypeScript for type safety
+- **Styling**: Tailwind CSS 4.0 with custom cosmic theme
+- **UI Components**: Radix UI primitives with custom styling
 - **Real-time**: Socket.IO client for live communication
-- **State Management**: React hooks for local state
-- **Routing**: Next.js App Router with dynamic routes
+- **State Management**: React hooks with local state
+- **Icons**: Lucide React for consistent iconography
 
-### **Backend** (Node.js + Express + Socket.IO)
-- **Server**: Express.js with Socket.IO for real-time features
+### **Backend Stack**
+- **Runtime**: Node.js with Express.js
+- **Real-time**: Socket.IO server for live features
 - **Database**: MongoDB with Mongoose ODM
-- **Authentication**: JWT-based token system
-- **Caching**: Redis for notifications and session data
-- **WebRTC**: Signaling server for peer-to-peer connections
+- **Authentication**: JWT-based token system with bcrypt
+- **File Upload**: Multer for profile picture uploads
+- **Validation**: Input validation and sanitization
 
 ### **Database Schema**
-```javascript
-// Users
-{
-  username: String (unique),
-  friends: [String],
-  friendRequests: [String],
-  createdAt: Date
+```typescript
+// User Model
+interface User {
+  username: string;           // Unique username
+  email: string;             // Unique email
+  password: string;          // Hashed password
+  profilePic?: string;       // Profile picture URL
+  friends: string[];         // Array of friend usernames
+  friendRequests: string[];  // Pending friend requests
+  createdAt: Date;
 }
 
-// Messages
-{
-  sender: String,
-  receiver: String,
-  content: String,
-  timestamp: Date
+// Message Model
+interface Message {
+  sender: string;            // Sender username
+  receiver: string;          // Receiver username
+  content: string;           // Message content
+  timestamp: Date;           // Message timestamp
 }
 
-// Rooms
-{
-  id: String (unique),
-  title: String,
-  description: String,
-  category: String,
-  type: 'meet' | 'watchparty',
-  isPrivate: Boolean,
-  createdBy: String,
-  participants: [String],
-  videoQueue: [{
-    url: String,
-    score: Number,
-    addedBy: String
-  }],
-  createdAt: Date
+// Room Model
+interface Room {
+  id: string;                // Unique room ID
+  title: string;             // Room title
+  description?: string;      // Room description
+  category?: string;         // Room category
+  type: 'Watch Together';    // Room type
+  isPrivate: boolean;        // Privacy setting
+  code?: string;             // Private room code
+  createdBy: string;         // Creator username
+  participants: string[];    // Current participants
+  videoQueue: VideoEntry[];  // Video queue for watch parties
+  currentVideoIndex: number; // Current video index
+  isPlaying: boolean;        // Playback status
+  lastSyncTime: number;      // Last sync timestamp
+  createdAt: Date;
+}
+
+interface VideoEntry {
+  url: string;               // YouTube URL
+  score: number;             // Vote score
+  addedBy: string;           // Added by username
 }
 ```
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js 18+ 
-- MongoDB
-- Redis
-- npm or yarn
+- **Node.js** 18+ 
+- **MongoDB** (local or cloud)
+- **npm** or **yarn**
 
 ### Installation
 
@@ -102,172 +114,204 @@ cd mishti.chat
 
 2. **Install dependencies**
 ```bash
-# Backend
+# Backend dependencies
 cd backend
 npm install
 
-# Frontend
+# Frontend dependencies
 cd ../frontend
-npm install
-
-# WebRTC Server
-cd ../webrtc-server
 npm install
 ```
 
 3. **Environment Setup**
+
+Create `.env` file in the backend directory:
 ```bash
 # Backend (.env)
 MONGODB_URI=mongodb://localhost:27017/mishti-chat
-JWT_SECRET=your-secret-key
-REDIS_URL=redis://localhost:6379
+JWT_SECRET=your-super-secret-jwt-key-here
+PORT=5001
+```
 
+Create `.env.local` file in the frontend directory:
+```bash
 # Frontend (.env.local)
-NEXT_PUBLIC_BACKEND_URL=http://localhost:5000
-NEXT_PUBLIC_WEBRTC_URL=http://localhost:7000
+NEXT_PUBLIC_BACKEND_URL=http://localhost:5001
 ```
 
 4. **Start the servers**
 ```bash
-# Terminal 1 - Backend
+# Terminal 1 - Backend (Port 5001)
 cd backend
 npm run dev
 
-# Terminal 2 - Frontend
+# Terminal 2 - Frontend (Port 3000)
 cd frontend
 npm run dev
-
-# Terminal 3 - WebRTC Server
-cd webrtc-server
-npm start
 ```
 
 5. **Access the application**
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:5000
-- WebRTC Server: http://localhost:7000
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:5001
 
 ## 📱 Usage Guide
 
 ### **Getting Started**
-1. **Sign Up/Login**: Create an account with a username
-2. **Add Friends**: Send friend requests to other users
-3. **Start Chatting**: Click on friends to start direct messaging
+1. **Sign Up**: Create an account with username, email, and password
+2. **Login**: Access your account with credentials
+3. **Add Friends**: Send friend requests to other users
+4. **Start Chatting**: Click on friends to begin direct messaging
 
 ### **Creating Rooms**
-1. **Choose Room Type**:
-   - **Video Meeting**: For face-to-face video calls
-   - **Watch Party**: For collaborative YouTube watching
-2. **Set Room Details**: Title, description, category, privacy
-3. **Create Room**: Click "Create Room" to generate a new room
+1. **Navigate to Rooms**: Click "Create Room" from dashboard
+2. **Choose Room Type**: Select "Watch Together" for collaborative video watching
+3. **Set Room Details**: 
+   - Title and description
+   - Category (optional)
+   - Privacy settings (public/private)
+4. **Create Room**: Click "Create Room" to generate a new room
 
 ### **Joining Rooms**
 1. **Browse Available Rooms**: See all public rooms on the dashboard
 2. **Join Room**: Click "Join Room" to enter
-3. **Participate**: Use room-specific features based on type
-
-### **Video Meeting Features**
-- **Start Video Call**: Click "Start Video Call" to enable camera/microphone
-- **Screen Share**: Toggle screen sharing on/off
-- **Chat**: Send messages to all participants
-- **Leave Room**: Click "Leave Room" to exit
+3. **Private Rooms**: Use room codes to join private rooms
+4. **Participate**: Use room-specific features based on type
 
 ### **Watch Party Features**
 - **Add Videos**: Paste YouTube URLs to add to the queue
-- **Vote**: Upvote/downvote videos to prioritize
-- **Navigate**: Use Previous/Next buttons to change videos
-- **Chat**: Discuss videos with other participants
+- **Vote System**: Upvote/downvote videos to prioritize the queue
+- **Synchronized Playback**: All participants watch the same video
+- **Queue Navigation**: Use Previous/Next buttons to change videos
+- **Real-time Chat**: Discuss videos with other participants
+
+### **Direct Messaging**
+- **Friend List**: View all your friends with online status
+- **Message History**: Persistent chat history with friends
+- **Emoji Support**: Use emoji picker for expressive messages
+- **Real-time Updates**: Instant message delivery and read status
 
 ## 🔧 API Endpoints
 
 ### **Authentication**
-- `POST /api/signup` - Create new user account
-- `POST /api/login` - User login
+```http
+POST /api/signup
+POST /api/login
+POST /api/verify
+POST /api/profile-pic
+```
 
-### **Friends & Messages**
-- `GET /api/friends/:username` - Get user's friends and requests
-- `GET /api/messages/:username1/:username2` - Get chat history
+### **Friends & Social**
+```http
+GET /api/friends/:username
+GET /api/users/search?q=:query
+GET /api/users/:username
+```
+
+### **Messages**
+```http
+GET /api/messages/:username1/:username2
+```
 
 ### **Rooms**
-- `GET /api/rooms` - Get all public rooms
+```http
+GET /api/rooms
+```
 
 ### **Socket Events**
-- `joinRoom` - Join a room
-- `leaveRoom` - Leave a room
-- `roomMessage` - Send room chat message
-- `sendDirectMessage` - Send private message
-- `sendFriendRequest` - Send friend request
-- `acceptFriendRequest` - Accept friend request
-- `addVideo` - Add video to watch party queue
-- `voteVideo` - Vote on video in queue
-- `webrtcSignal` - WebRTC signaling for video calls
+```typescript
+// Room Events
+'joinRoom'           // Join a room
+'leaveRoom'          // Leave a room
+'roomMessage'        // Send room chat message
+'roomCreated'        // New room created
+'roomUpdated'        // Room updated
+'userJoined'         // User joined room
+'userLeft'           // User left room
+
+// Video Events (Watch Parties)
+'addVideo'           // Add video to queue
+'voteVideo'          // Vote on video
+'changeVideo'        // Change current video
+'videoPlayerStateChanged' // Video player state update
+
+// Messaging Events
+'sendDirectMessage'  // Send private message
+'directMessage'      // Receive private message
+
+// Friend Events
+'sendFriendRequest'  // Send friend request
+'acceptFriendRequest' // Accept friend request
+'rejectFriendRequest' // Reject friend request
+'friendRequest'      // Receive friend request
+'friendRequestAccepted' // Friend request accepted
+
+// Status Events
+'online'             // User came online
+'friendOnline'       // Friend came online
+'friendOffline'      // Friend went offline
+```
 
 ## 🛠️ Development
 
 ### **Project Structure**
 ```
 mishti.chat/
-├── frontend/                 # Next.js frontend
-│   ├── app/                 # App Router pages
-│   ├── components/          # React components
-│   └── package.json
-├── backend/                 # Express.js backend
+├── frontend/                    # Next.js 15 frontend
+│   ├── app/                    # App Router pages
+│   │   ├── chat/              # Direct messaging
+│   │   ├── dashboard/         # Main dashboard
+│   │   ├── friends/           # Friend management
+│   │   ├── rooms/             # Room management
+│   │   ├── signup/            # Authentication
+│   │   └── call/[id]/         # Watch party rooms
+│   ├── components/            # React components
+│   │   ├── ui/               # Radix UI components
+│   │   ├── friends/          # Friend-related components
+│   │   ├── rooms/            # Room-related components
+│   │   └── dashboard/        # Dashboard components
+│   ├── hooks/                # Custom React hooks
+│   ├── lib/                  # Utility functions
+│   └── public/               # Static assets
+├── backend/                   # Express.js backend
 │   ├── src/
-│   │   └── index.ts        # Main server file
+│   │   └── index.ts          # Main server file
+│   ├── uploads/              # File uploads
 │   └── package.json
-├── webrtc-server/          # WebRTC signaling server
-│   └── index.ts
 └── README.md
 ```
 
 ### **Key Technologies**
-- **Frontend**: Next.js 15, React 19, TypeScript, Tailwind CSS
-- **Backend**: Node.js, Express, Socket.IO, MongoDB, Redis
-- **Real-time**: WebRTC, Socket.IO
-- **Authentication**: JWT
-- **Database**: MongoDB with Mongoose
+- **Frontend**: Next.js 15, React 19, TypeScript, Tailwind CSS 4.0
+- **Backend**: Node.js, Express, Socket.IO, MongoDB, Mongoose
+- **Real-time**: Socket.IO for live communication
+- **Authentication**: JWT with bcrypt password hashing
+- **File Upload**: Multer for profile picture uploads
+- **UI Components**: Radix UI primitives with custom styling
 
-## 🚀 Deployment
+### **Development Scripts**
+```bash
+# Frontend
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run start        # Start production server
+npm run lint         # Run ESLint
+
+# Backend
+npm run dev          # Start development server with nodemon
+npm run start        # Start production server
+npm run build        # Build TypeScript
+```
 
 ### **Environment Variables**
 ```bash
 # Production Backend
-MONGODB_URI=mongodb://your-mongodb-uri
-JWT_SECRET=your-production-secret
-REDIS_URL=redis://your-redis-uri
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/cirql
+JWT_SECRET=your-production-jwt-secret
+PORT=5001
 NODE_ENV=production
 
 # Production Frontend
 NEXT_PUBLIC_BACKEND_URL=https://your-backend-domain.com
-NEXT_PUBLIC_WEBRTC_URL=https://your-webrtc-domain.com
-```
 
-### **Deployment Steps**
-1. **Backend**: Deploy to Vercel, Railway, or any Node.js hosting
-2. **Frontend**: Deploy to Vercel, Netlify, or any static hosting
-3. **Database**: Use MongoDB Atlas for database
-4. **Redis**: Use Redis Cloud or similar service
-5. **WebRTC**: Deploy signaling server to support WebRTC connections
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License.
-
-## 🆘 Support
-
-For support and questions:
-- Create an issue in the repository
-- Check the documentation
-- Review the code comments
-
----
-
-**Built with ❤️ for the Mishti.chat community** 
+*Connect, collaborate, and create amazing experiences together!* 
