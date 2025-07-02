@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 version: "3.8"
+=======
+version: '3.8'
+>>>>>>> 4fee97eab878dcd50e72dd5397728f80ad9b20ba
 services:
   backend:
     build: ./backend
@@ -6,6 +10,7 @@ services:
       - "5001:5001"
     environment:
       - MONGODB_URI=mongodb://mongo:27017/cirql
+<<<<<<< HEAD
       - JWT_SECRET=your_jwt_secret
     volumes:
       - ./backend/uploads:/app/uploads
@@ -21,12 +26,28 @@ services:
     depends_on:
       - backend
 
+=======
+      - JWT_SECRET=your_secret_here
+    depends_on:
+      - mongo
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+>>>>>>> 4fee97eab878dcd50e72dd5397728f80ad9b20ba
   mongo:
     image: mongo:6
     ports:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
+<<<<<<< HEAD
 
 volumes:
   mongo_data: 
+=======
+volumes:
+  mongo_data:
+>>>>>>> 4fee97eab878dcd50e72dd5397728f80ad9b20ba
