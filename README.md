@@ -343,4 +343,5 @@ For support and questions:
 
 ---
 
-**Built with ❤️ for the Mishti.chat community** 
+**Built with ❤️ for the Mishti.chat community** #   C i r q l - r e a l t i m e  
+ 
