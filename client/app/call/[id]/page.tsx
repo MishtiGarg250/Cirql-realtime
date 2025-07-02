@@ -58,7 +58,6 @@ export default function CallPage() {
     });
     socket.on("videoAdded", (video: any) => {
       setQueue((prev) => [...prev, video]);
-      if (!currentVideo) setCurrentVideo(video);
     });
     socket.on("videoVoted", ({ newQueue }) => {
       setQueue(newQueue);

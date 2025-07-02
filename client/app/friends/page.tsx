@@ -48,7 +48,7 @@ export default function FriendsPage() {
     const token = localStorage.getItem("token");
     if (!token || !user) return;
     setLoading(true);
-    fetch(`${process.env.NEXT_PUBLIC_BACKEND_UR}/api/friends/${user}`, {
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/friends/${user}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(res => {

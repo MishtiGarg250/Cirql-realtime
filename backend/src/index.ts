@@ -541,19 +541,18 @@ io.on('connection', (socket) => {
   });
 
   // Room Management
-  socket.on('createRoom', async ({ roomId, title, description, category, type, isPrivate }) => {
+  socket.on('createRoom', async ({ roomId, title, description, category, type, isPrivate }, callback) => {
     try {
       if (!roomId || !title || !type) {
+        if (callback) callback({ error: 'Missing required fields' });
         return;
       }
-      
       // Check if room already exists to prevent duplicates
       const existingRoom = await Room.findOne({ id: roomId });
       if (existingRoom) {
-        console.log('Room already exists:', roomId);
+        if (callback) callback({ error: 'Room already exists' });
         return;
       }
-      
       let code = undefined;
       if (isPrivate) {
         // Generate a unique code for the private room
@@ -580,12 +579,14 @@ io.on('connection', (socket) => {
       socket.join(roomId);
       // Convert Map objects to plain objects for Socket.IO serialization
       const roomDataForSocket = serializeRoomForSocket(room);
+      if (callback) callback(roomDataForSocket);
       socket.emit('roomCreated', roomDataForSocket);
       // If private, also send the code
       if (isPrivate && code) {
         socket.emit('privateRoomCode', { code });
       }
     } catch (error) {
+      if (callback) callback({ error: 'Error creating room' });
       console.error('Error creating room:', error);
     }
   });
