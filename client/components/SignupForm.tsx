@@ -32,6 +32,7 @@ export default function SignupForm({ onSuccess }: SignupFormProps) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Signup failed");
       localStorage.setItem("token", data.token);
+      localStorage.setItem("username", form.username);
       if (onSuccess) onSuccess(data.token);
     } catch (err: any) {
       setError(err.message);
